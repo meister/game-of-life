@@ -5,9 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "node_modules/.bin/jshint .",
+    "lint": "node_modules/.bin/jshint",
+    "lint-style": "node_modules/.bin/jscs",
     "validate": "npm ls",
-    "shrinkwrap": "npm shrinkwrap && git add npm-shrinkwrap.json"
+    "shrinkwrap": "npm shrinkwrap && git add npm-shrinkwrap.json",
+    "start": "node_modules/.bin/webpack-dev-server --content-base build/ --hot",
+    "prepublish": "node_modules/.bin/webpack"
   },
   "keywords": [
     "life",
@@ -16,18 +19,23 @@
   ],
   "author": "Martin Kapp <martin@coderats.net>",
   "license": "ISC",
-  "dependencies": {
-    "express": "^4.13.1"
-  },
   "pre-commit": [
     "lint",
+    "lint-style",
     "validate",
-    "test",
     "shrinkwrap"
   ],
+  "dependencies": {
+    "express": "^4.13.1",
+    "jquery": "^2.1.4",
+    "lodash": "^3.10.0",
+    "node-libs-browser": "^0.5.2",
+    "webpack": "^1.10.1"
+  },
   "devDependencies": {
     "jscs": "^1.13.1",
     "jshint": "^2.8.0",
-    "precommit-hook": "^3.0.0"
+    "precommit-hook": "^3.0.0",
+    "webpack-dev-server": "^1.10.1"
   }
 }

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Conway’s Game of Life</title>
+		<style>
+		#board {
+			display: inline-block;
+			border: 1px solid grey;
+		}
+		table,
+		td {
+			border: 1px solid grey;
+			border-collapse: collapse;
+		}
+		td {
+			height: 5px;
+			width: 5px;
+		}
+		td.live {
+			background-color: #333;
+		}
+		</style>
+	</head>
+	<body>
+		<div id="board"></div>
+		<!-- It is important that you point to the full url -->
+		 <script src="http://localhost:8080/webpack-dev-server.js"></script>
+		<script src="./bundle.js"></script>
+	</body>
+</html>
