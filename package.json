@@ -1,0 +1,33 @@
+{
+  "name": "game-of-life",
+  "version": "0.0.1",
+  "description": "Conway's Game of Life interpretation written in JS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "node_modules/.bin/jshint .",
+    "validate": "npm ls",
+    "shrinkwrap": "npm shrinkwrap && git add npm-shrinkwrap.json"
+  },
+  "keywords": [
+    "life",
+    "conway",
+    "javascript"
+  ],
+  "author": "Martin Kapp <martin@coderats.net>",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.1"
+  },
+  "pre-commit": [
+    "lint",
+    "validate",
+    "test",
+    "shrinkwrap"
+  ],
+  "devDependencies": {
+    "jscs": "^1.13.1",
+    "jshint": "^2.8.0",
+    "precommit-hook": "^3.0.0"
+  }
+}
