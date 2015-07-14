@@ -3,29 +3,41 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Conway’s Game of Life</title>
-		<style>
-		#board {
-			display: inline-block;
-			border: 1px solid grey;
-		}
-		table,
-		td {
-			border: 1px solid grey;
-			border-collapse: collapse;
-		}
-		td {
-			height: 5px;
-			width: 5px;
-		}
-		td.live {
-			background-color: #333;
-		}
-		</style>
+		<!-- Compiled and minified CSS -->
+		<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Raleway:400,300,600" />
+		<link rel="stylesheet" href="./normalize.css" />
+		<link rel="stylesheet" href="./skeleton.css" />
+		<link rel="stylesheet" href="./custom.css" />
 	</head>
 	<body>
-		<div id="board"></div>
+		<nav class="navbar">
+			<div class="container">
+				<ul class="navbar-list">
+					<li class="navbar-item"><span class="navbar-link">Conway’s Game of Life</span></li>
+					<li class="navbar-item"><a class="navbar-link" href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life">Wikipedia</a></li>
+					<li class="navbar-item"><a class="navbar-link" href="https://github.com/meister/game-of-life"><i class="gh-ico"></i></a></li>
+				</ul>
+			</div>
+		</nav>
+
+		<div class="container u-full-width">
+			<div class="row">
+				<div class="col s12" id="board">
+					<div class="controls">
+						<button class="control-button">Evolve</button>
+						<select class="control-seed">
+							<option value="random">Random</option>
+							<optgroup label="Predefined">
+							</optgroup>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
 		<!-- It is important that you point to the full url -->
-		 <script src="http://localhost:8080/webpack-dev-server.js"></script>
+		<script src="http://localhost:8080/webpack-dev-server.js"></script>
 		<script src="./bundle.js"></script>
 	</body>
 </html>

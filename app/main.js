@@ -1,20 +1,34 @@
-var Table = require('./table-builder'),
+var Board = require('./board-canvas'),
+	CycleController = require('./cycle-controller'),
+	Universe = require('./universe'),
 
-table = new Table({
+universe = new Universe({
+	seed: {
+		type: 'random',
+		pattern: 'random'
+	}
+}),
+
+board = new Board({
 	container: '#board',
-	width: 50,
-	height: 50
+	universe: universe,
+	cellSize: 4
 });
 
-table.renderCells([
-	[0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-	[1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-	[0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-	[1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-	[0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-	[1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-	[0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-	[1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-	[0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-	[1, 0, 1, 0, 1, 0, 1, 0, 1, 0]
-]);
+new CycleController({
+	// board view
+	board: board,
+	// in milliseconds
+	cycle: 60,
+	// handle seed change
+	onChangeSeed: function(pattern) {
+		board.setUniverse(new Universe({
+			seed: {
+				type: pattern === 'random' ? 'random' : 'pattern',
+				pattern: pattern
+			},
+			width: universe.width,
+			height: universe.height
+		}));
+	}
+});
