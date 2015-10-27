@@ -10,7 +10,7 @@
     "validate": "npm ls",
     "shrinkwrap": "npm shrinkwrap && git add npm-shrinkwrap.json",
     "start": "node_modules/.bin/webpack-dev-server --content-base build/ --hot",
-    "prepublish": "node_modules/.bin/webpack"
+    "prepublish": "node_modules/.bin/webpack --config webpack.publish.js"
   },
   "keywords": [
     "life",
