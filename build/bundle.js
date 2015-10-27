@@ -34,7 +34,7 @@
 /******/ 	__webpack_require__.c = installedModules;
 
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/assets/";
+/******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
@@ -44,87 +44,192 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(1);
+	__webpack_require__(1);
+	module.exports = __webpack_require__(2);
 
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Table = __webpack_require__(2),
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	/*globals window __webpack_hash__ */
+	if(false) {
+		var lastData;
+		var upToDate = function upToDate() {
+			return lastData.indexOf(__webpack_hash__) >= 0;
+		};
+		var check = function check() {
+			module.hot.check(true, function(err, updatedModules) {
+				if(err) {
+					if(module.hot.status() in {abort: 1, fail: 1}) {
+						console.warn("[HMR] Cannot apply update. Need to do a full reload!");
+						console.warn("[HMR] " + err.stack || err.message);
+						window.location.reload();
+					} else {
+						console.warn("[HMR] Update failed: " + err.stack || err.message);
+					}
+					return;
+				}
 
-	table = new Table({
-		container: '#board',
-		width: 10,
-		height: 10
-	});
+				if(!updatedModules) {
+					console.warn("[HMR] Cannot find update. Need to do a full reload!");
+					console.warn("[HMR] (Probably because of restarting the webpack-dev-server)");
+					window.location.reload();
+					return;
+				}
 
-	table.renderCells([
-		[0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-		[1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-		[0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-		[1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-		[0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-		[1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-		[0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-		[1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-		[0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-		[1, 0, 1, 0, 1, 0, 1, 0, 1, 0]
-	]);
+				if(!upToDate()) {
+					check();
+				}
+
+				require("./log-apply-result")(updatedModules, updatedModules);
+
+				if(upToDate()) {
+					console.log("[HMR] App is up to date.");
+				}
+
+			});
+		};
+		var addEventListener = window.addEventListener ? function(eventName, listener) {
+			window.addEventListener(eventName, listener, false);
+		} : function (eventName, listener) {
+			window.attachEvent("on" + eventName, listener);
+		};
+		addEventListener("message", function(event) {
+			if(typeof event.data === "string" && event.data.indexOf("webpackHotUpdate") === 0) {
+				lastData = event.data;
+				if(!upToDate() && module.hot.status() === "idle") {
+					console.log("[HMR] Checking for updates on the server...");
+					check();
+				}
+			}
+		});
+		console.log("[HMR] Waiting for update signal from WDS...");
+	} else {
+		throw new Error("[HMR] Hot Module Replacement is disabled.");
+	}
+
 
 /***/ },
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var $ = __webpack_require__(3),
-		_ = __webpack_require__(4),
+	var Board = __webpack_require__(3),
+		CycleController = __webpack_require__(7),
+		Universe = __webpack_require__(9),
 
-	defaultOptions = {
-		height: 10,
-		width: 10,
-		container: 'body'
-	},
-
-	Table = function(options) {
-		this.options = _.extend({}, defaultOptions, options);
-		this.$container = $(this.options.container);
-		this.build(this.options.width, this.options.height, this.options.cellSize);
-	};
-
-	Table.prototype.build = function() {
-		var row, column,
-			$row, $cell,
-			cid;
-
-		this.$table = $('<table>').appendTo(this.$container);
-
-		for (row = 0; row < this.options.height; row++) {
-			$row = $('<tr>');
-
-			for (column = 0; column < this.options.width; column++) {
-				cid = 'c.' + row + '.' + column;
-				$cell = $('<td>').attr('data-cid', cid).appendTo($row);
-			}
-
-			$row.appendTo(this.$table);
+	universe = new Universe({
+		seed: {
+			type: 'random',
+			pattern: 'random'
 		}
-	};
+	}),
 
-	Table.prototype.renderCells = function(cells) {
-		var row, column;
+	board = new Board({
+		container: '#board',
+		universe: universe,
+		cellSize: 3
+	});
 
-		for (row = 0; row < this.options.height; row++) {
-			for (column = 0; column < this.options.width; column++) {
-				this.$table.find('[data-cid="c.' + row + '.' + column + '"]')
-					.addClass(cells[row][column] ? 'live' : 'dead');
-			}
+	new CycleController({
+		// board view
+		board: board,
+		// in milliseconds
+		cycle: 60,
+		// handle seed change
+		onChangeSeed: function(pattern) {
+			board.setUniverse(new Universe({
+				seed: {
+					type: pattern === 'random' ? 'random' : 'pattern',
+					pattern: pattern
+				},
+				width: universe.width,
+				height: universe.height
+			}));
 		}
-	};
-
-	module.exports = Table;
+	});
 
 /***/ },
 /* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $ = __webpack_require__(4),
+		_ = __webpack_require__(5),
+
+	defaultOptions = {
+		container: 'body',
+		cellSize: 3
+	},
+
+	Board = function(options) {
+		this.options = _.extend({}, defaultOptions, options);
+		this.universe = this.options.universe;
+		this.$container = $(this.options.container);
+		this.build();
+	};
+
+	Board.prototype.build = function() {
+		this.$header = $('<h4>').appendTo(this.$container);
+		this.$canvas = $('<canvas>').appendTo(this.$container);
+		this.canvas = this.$canvas.get(0);
+		this.setDimensions();
+	};
+
+	Board.prototype.setDimensions = function() {
+		var width = parseInt(this.$canvas.width() / this.options.cellSize, 10),
+			height = parseInt(this.$canvas.height() / this.options.cellSize, 10);
+
+		this.universe.setDimensions(width, height);
+		this.universe.seedUniverse();
+
+		this.$canvas.attr({
+			width: this.universe.width * this.options.cellSize,
+			height: this.universe.height * this.options.cellSize
+		});
+	};
+
+	Board.prototype.setUniverse = function(universe) {
+		this.options.universe = universe;
+		this.universe = universe;
+	};
+
+	Board.prototype.renderCells = function() {
+		var context = this.canvas.getContext('2d'),
+			universe = this.universe;
+
+		this.$header.text('Generation: ' + (universe.generation || 0));
+
+		function drawDot(row, col, color) {
+			context.fillStyle = color || 'black';
+			context.fillRect(
+				col * this.options.cellSize,
+				row * this.options.cellSize,
+				this.options.cellSize,
+				this.options.cellSize
+			);
+		}
+
+		if (universe.delta) {
+			// Draw live cells
+			universe.delta.live.forEach(function(pos) {
+				drawDot.call(this, pos.row, pos.col, 'black');
+			}.bind(this));
+
+			// Dead cells
+			universe.delta.dead.forEach(function(pos) {
+				drawDot.call(this, pos.row, pos.col, 'white');
+			}.bind(this));
+		}
+	};
+
+	module.exports = Board;
+
+/***/ },
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -9340,7 +9445,7 @@
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/**
@@ -21695,10 +21800,10 @@
 	  }
 	}.call(this));
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)(module), (function() { return this; }())))
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -21712,6 +21817,357 @@
 		return module;
 	}
 
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $ = __webpack_require__(4),
+		_ = __webpack_require__(5),
+		seedPatterns = __webpack_require__(8),
+
+	bindManualControls = function(board) {
+		board.$container.find('.control-button').on('click', this.nextCycle.bind(this));
+		board.$container.find('.control-seed')
+			.on('change', this.resetCycle.bind(this));
+	},
+
+	bindAutomaticControls = function(board) {
+		board.$container.find('.control-button')
+			.on('click', function(ev) {
+				var paused = this.pauseCycle();
+				$(ev.target).text(paused ? 'Resume' : 'Pause');
+			}.bind(this))
+			.text(this.paused ? 'Resume' : 'Pause');
+		board.$container.find('.control-seed')
+			.on('change', this.resetCycle.bind(this));
+	},
+
+	fillSelect = function(board) {
+		var $select = board.$container.find('.control-seed'),
+			$optgroup = $select.find('optgroup'),
+			$opt;
+
+		_.each(seedPatterns, function(value, key) {
+			$opt = $('<option>').val(key).text(key.replace(/-/g, ' '));
+			$optgroup.append($opt);
+		});
+	},
+
+	CycleController = function(options) {
+		this.options = options;
+		this.paused = false;
+		this.board = this.options.board;
+
+		fillSelect.call(this, this.board);
+
+		this.initialize();
+	};
+
+	CycleController.prototype.initialize = function() {
+		if (!this.options.cycle) {
+			bindManualControls.call(this, this.board);
+		} else {
+			this.pauseCycle();
+			bindAutomaticControls.call(this, this.board);
+		}
+
+		this.board.renderCells(this.options.universe);
+	};
+
+	CycleController.prototype.nextCycle = function() {
+		this.board.universe.evolve();
+		this.board.renderCells();
+	};
+
+	CycleController.prototype.pauseCycle = function() {
+		this.paused = !this.paused;
+
+		if (this.paused) {
+			clearInterval(this.cycleTimer);
+		} else {
+			this.cycleTimer = setInterval(this.nextCycle.bind(this), this.options.cycle);
+		}
+
+		return this.paused;
+	};
+
+	CycleController.prototype.resetCycle = function(ev) {
+		this.board.$container.find('.control-button').off('click');
+		this.board.$container.find('.control-seed').off('change');
+		clearInterval(this.cycleTimer);
+		this.paused = false;
+
+		if (typeof this.options.onChangeSeed === 'function') {
+			this.options.onChangeSeed($(ev.target).val());
+		}
+
+		this.board.universe.seedUniverse();
+		this.initialize();
+	};
+
+	module.exports = CycleController;
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	module.exports = {
+		'gosper-glider-gun': [
+			'.........................O............',
+			'.......................O.O............',
+			'.............OO......OO............OO.',
+			'............O...O....OO............OO.',
+			'.OO........O.....O...OO...............',
+			'.OO........O...O.OO....O.O............',
+			'...........O.....O.......O............',
+			'............O...O.....................',
+			'.............OO.......................'
+		],
+		'infinite-1': [
+			'.......O..',
+			'.....O.OO.',
+			'.....O.O..',
+			'.....O....',
+			'...O......',
+			'.O.O......'
+		],
+		'infinite-2': [
+			'.OOO.O.',
+			'.O.....',
+			'....OO.',
+			'..OO.O.',
+			'.O.O.O.'
+		],
+		'infinite-3': [
+			'.OOOOOOOO.OOOOO...OOO......OOOOOOO.OOOOO.'
+		],
+		'blinker-ship': [
+			'...........OOOO.............',
+			'...........O...O............',
+			'...........O................',
+			'..OO........O..O............',
+			'.OO.OO......................',
+			'..OOOO...O..................',
+			'...OO...O.OO........O....OOO',
+			'.......O...O........O....O.O',
+			'...OO...O.OO........O....OOO',
+			'..OOOO...O..................',
+			'.OO.OO......................',
+			'..OO........O..O............',
+			'...........O................',
+			'...........O...O............',
+			'...........OOOO.............'
+		],
+		'boss': [
+			'.....O.....',
+			'....O.O....',
+			'....O.O....',
+			'...OO.OO...',
+			'..O.....O..',
+			'.O.O.O.O.O.',
+			'.O.O...O.O.',
+			'OO.O...O.OO',
+			'O..O.O.O..O',
+			'..O.....O..',
+			'...OO.OO...',
+			'....O.O....',
+			'....O.O....',
+			'.....O.....'
+		],
+		'puffer': [
+			'...OOO......O.....O......OOO.',
+			'..O..O.....OOO...OOO.....O..O',
+			'.....O....OO.O...O.OO....O...',
+			'.....O...................O...',
+			'.....O..O.............O..O...',
+			'.....O..OO...........OO..O...',
+			'....O...OO...........OO...O..'
+		],
+		'snail': [
+			'.O....................................',
+			'.O....................................',
+			'O.....................................',
+			'.OOO.................OOO...OOO........',
+			'.OO.O.........O...O.O......OOO........',
+			'..O...........OO.O.......O....OOOO....',
+			'......O......O...O.O...OO.O.....OO....',
+			'...O..O.OOO...OO.........O........OO.O',
+			'...OO.O.....O.....O.................O.',
+			'.........O.OOOOOOO....................',
+			'......................................',
+			'.........O.OOOOOOO....................',
+			'...OO.O.....O.....O.................O.',
+			'...O..O.OOO...OO.........O........OO.O',
+			'......O......O...O.O...OO.O.....OO....',
+			'..O...........OO.O.......O....OOOO....',
+			'.OO.O.........O...O.O......OOO........',
+			'.OOO.................OOO...OOO........',
+			'O.....................................',
+			'.O....................................',
+			'.O....................................'
+		],
+		'blinker-puffer': [
+			'.............OOO.',
+			'............OOOOO',
+			'...........OO.OOO',
+			'............OO...',
+			'.................',
+			'.................',
+			'.........O.O.....',
+			'..O.....O..O.....',
+			'.OOOOO...O.O.....',
+			'OO...OO.OO.......',
+			'.O.......O.......',
+			'..OO..O..O.......',
+			'..........O......',
+			'..OO..O..O.......',
+			'.O.......O.......',
+			'OO...OO.OO.......',
+			'.OOOOO...O.O.....',
+			'..O.....O..O.....',
+			'.........O.O.....',
+			'.................',
+			'.................',
+			'............OO...',
+			'...........OO.OOO',
+			'............OOOOO',
+			'.............OOO.'
+		]
+	};
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(5),
+		seedPatterns = __webpack_require__(8),
+
+	evolveCells = function(fn) {
+		var row, column, state,
+			cells = [],
+			delta = {
+				'live': [],
+				'dead': []
+			};
+
+		for (row = 0; row < this.height; row++) {
+			cells[row] = [];
+			for (column = 0; column < this.width; column++) {
+				state = fn.call(this, row, column);
+				// console.log(row, column, state);
+
+				if (!this.cells || (state !== this.cells[row][column])) {
+					delta[state ? 'live' : 'dead'].push({row: row, col: column});
+				}
+
+				cells[row][column] = state;
+			}
+		}
+
+		this.delta = delta;
+		this.cells = cells;
+	},
+
+	countNeighbours = function(row, column) {
+		var count = 0,
+
+			prevrow = row - 1 < 0 ? this.height - 1 : row - 1,
+			nextrow = row + 1 >= this.height ? 0 : row + 1,
+
+			prevCol = column - 1 < 0 ? this.width - 1 : column - 1,
+			nextCol = column + 1 >= this.width ? 0 : column + 1;
+
+		/* jscs:disable */
+		if (this.cells[prevrow][prevCol]) { count++; }
+		if (this.cells[prevrow][column]) { count++; }
+		if (this.cells[prevrow][nextCol]) { count++; }
+
+		if (this.cells[row][prevCol]) { count++; }
+		if (this.cells[row][nextCol]) { count++; }
+
+		if (this.cells[nextrow][prevCol]) { count++; }
+		if (this.cells[nextrow][column]) { count++; }
+		if (this.cells[nextrow][nextCol]) { count++; }
+		/* jscs:enable */
+
+		return count;
+	},
+
+	defaultOptions = {
+		seed: {
+			type: 'random'
+		}
+	},
+
+	Universe = function(options) {
+		this.options = _.extend({}, defaultOptions, options);
+		this.width = this.options.width || 50;
+		this.height = this.options.height || 50;
+		this.generation = 0;
+	};
+
+	Universe.prototype.setDimensions = function(width, height) {
+		this.width = width || this.width;
+		this.height = height || this.height;
+	};
+
+	Universe.prototype.seedUniverse = function() {
+		evolveCells.call(this, function(row, column) {
+			// Custom seed function
+			if (typeof this.options.seed === 'function') {
+				return this.options.seed.call(this, row, column);
+			} else if (typeof this.options.seed === 'object') {
+				// Patterns
+				if (this.options.seed.type === 'pattern' && seedPatterns.hasOwnProperty(this.options.seed.pattern)) {
+					 return this.getStateFromPattern(this.options.seed.pattern, row, column);
+				}
+
+				// Random seed
+				if (this.options.seed.type === 'random') {
+					return Math.random() > (this.options.seed.chance || 0.5);
+				}
+			}
+		});
+	};
+
+	Universe.prototype.getStateFromPattern = function(pattern, row, column) {
+		var data = seedPatterns[pattern],
+			verticalAlignmentFix = parseInt((this.height - data.length) / 2, 10),
+			alignedRow = row - verticalAlignmentFix;
+
+		if (data.length > alignedRow && row >= verticalAlignmentFix && data[alignedRow].length > column) {
+			return data[alignedRow][column].toUpperCase() === 'O';
+		} else {
+			return false;
+		}
+	};
+
+	Universe.prototype.evolve = function() {
+		evolveCells.call(this, function(row, column) {
+			var myState = this.cells[row][column],
+				state = myState,
+				liveNeighbours = countNeighbours.call(this, row, column);
+
+			/* Rules of Life */
+			// underpopulation
+			if (liveNeighbours < 2) {
+				state = false;
+			// overpopulation
+			} else if (liveNeighbours > 3) {
+				state = false;
+			// reproduction
+			} else if (myState === false && liveNeighbours === 3) {
+				state = true;
+			}
+
+			return state;
+		});
+
+		this.generation++;
+	};
+
+	module.exports = Universe;
 
 /***/ }
 /******/ ]);
