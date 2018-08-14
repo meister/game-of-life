@@ -132,7 +132,7 @@
 	board = new Board({
 		container: '#board',
 		universe: universe,
-		cellSize: 4
+		cellSize: 3
 	});
 
 	new CycleController({
