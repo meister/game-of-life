@@ -240,9 +240,9 @@
       }
     },
     "jquery": {
-      "version": "2.1.4",
-      "from": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz",
-      "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
+      "version": "3.3.1",
+      "from": "jquery@>=3.0.0 <4.0.0",
+      "resolved": "https://registry.npmjs.org/jquery/-/jquery-3.3.1.tgz"
     },
     "lodash": {
       "version": "3.10.0",
@@ -549,7 +549,7 @@
         },
         "supports-color": {
           "version": "1.3.1",
-          "from": "https://registry.npmjs.org/supports-color/-/supports-color-1.3.1.tgz",
+          "from": "supports-color@>=1.3.0 <2.0.0",
           "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-1.3.1.tgz"
         },
         "tapable": {
@@ -880,18 +880,6 @@
                           "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
                         }
                       }
-                    }
-                  }
-                },
-                "fsevents": {
-                  "version": "0.3.6",
-                  "from": "https://registry.npmjs.org/fsevents/-/fsevents-0.3.6.tgz",
-                  "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-0.3.6.tgz",
-                  "dependencies": {
-                    "nan": {
-                      "version": "1.8.4",
-                      "from": "https://registry.npmjs.org/nan/-/nan-1.8.4.tgz",
-                      "resolved": "https://registry.npmjs.org/nan/-/nan-1.8.4.tgz"
                     }
                   }
                 }
