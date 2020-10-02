@@ -1,23 +1,24 @@
-var Board = require('./board-canvas'),
-	CycleController = require('./cycle-controller'),
-	Universe = require('./universe'),
+const Board = require('./board-canvas');
 
-universe = new Universe({
+const CycleController = require('./cycle-controller');
+const Universe = require('./universe');
+
+const universe = new Universe({
 	seed: {
 		type: 'random',
 		pattern: 'random'
 	}
-}),
+});
 
-board = new Board({
+const board = new Board({
 	container: '#board',
-	universe: universe,
+	universe,
 	cellSize: 3
 });
 
 new CycleController({
 	// board view
-	board: board,
+	board,
 	// in milliseconds
 	cycle: 60,
 	// handle seed change
@@ -25,7 +26,7 @@ new CycleController({
 		board.setUniverse(new Universe({
 			seed: {
 				type: pattern === 'random' ? 'random' : 'pattern',
-				pattern: pattern
+				pattern
 			},
 			width: universe.width,
 			height: universe.height

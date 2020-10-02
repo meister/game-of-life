@@ -1,0 +1,9 @@
+{
+  "root": true,
+  "extends": [
+    "pipedrive/es9"
+  ],
+  "rules": {
+	  "comma-dangle": "off"
+  }
+}

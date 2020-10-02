@@ -1,13 +1,17 @@
-var _ = require('lodash'),
-	seedPatterns = require('./seed-patterns'),
+const _ = require('lodash');
 
-evolveCells = function(fn) {
-	var row, column, state,
-		cells = [],
-		delta = {
-			'live': [],
-			'dead': []
-		};
+const seedPatterns = require('./seed-patterns');
+
+const evolveCells = function(fn) {
+	let row;
+
+	let column; let state;
+
+	const cells = [];
+	const delta = {
+		live: [],
+		dead: []
+	};
 
 	for (row = 0; row < this.height; row++) {
 		cells[row] = [];
@@ -16,7 +20,7 @@ evolveCells = function(fn) {
 			// console.log(row, column, state);
 
 			if (!this.cells || (state !== this.cells[row][column])) {
-				delta[state ? 'live' : 'dead'].push({row: row, col: column});
+				delta[state ? 'live' : 'dead'].push({ row, col: column });
 			}
 
 			cells[row][column] = state;
@@ -25,40 +29,60 @@ evolveCells = function(fn) {
 
 	this.delta = delta;
 	this.cells = cells;
-},
+};
 
-countNeighbours = function(row, column) {
-	var count = 0,
+/* eslint-disable-next-line complexity */
+const countNeighbours = function(row, column) {
+	let count = 0;
 
-		prevrow = row - 1 < 0 ? this.height - 1 : row - 1,
-		nextrow = row + 1 >= this.height ? 0 : row + 1,
+	const prevrow = row - 1 < 0 ? this.height - 1 : row - 1;
+	const nextrow = row + 1 >= this.height ? 0 : row + 1;
 
-		prevCol = column - 1 < 0 ? this.width - 1 : column - 1,
-		nextCol = column + 1 >= this.width ? 0 : column + 1;
+	const prevCol = column - 1 < 0 ? this.width - 1 : column - 1;
+	const nextCol = column + 1 >= this.width ? 0 : column + 1;
 
-	/* jscs:disable */
-	if (this.cells[prevrow][prevCol]) { count++; }
-	if (this.cells[prevrow][column]) { count++; }
-	if (this.cells[prevrow][nextCol]) { count++; }
+	if (this.cells[prevrow][prevCol]) {
+		count++;
+	}
 
-	if (this.cells[row][prevCol]) { count++; }
-	if (this.cells[row][nextCol]) { count++; }
+	if (this.cells[prevrow][column]) {
+		count++;
+	}
 
-	if (this.cells[nextrow][prevCol]) { count++; }
-	if (this.cells[nextrow][column]) { count++; }
-	if (this.cells[nextrow][nextCol]) { count++; }
-	/* jscs:enable */
+	if (this.cells[prevrow][nextCol]) {
+		count++;
+	}
+
+	if (this.cells[row][prevCol]) {
+		count++;
+	}
+
+	if (this.cells[row][nextCol]) {
+		count++;
+	}
+
+	if (this.cells[nextrow][prevCol]) {
+		count++;
+	}
+
+	if (this.cells[nextrow][column]) {
+		count++;
+	}
+
+	if (this.cells[nextrow][nextCol]) {
+		count++;
+	}
 
 	return count;
-},
+};
 
-defaultOptions = {
+const defaultOptions = {
 	seed: {
 		type: 'random'
 	}
-},
+};
 
-Universe = function(options) {
+const Universe = function(options) {
 	this.options = _.extend({}, defaultOptions, options);
 	this.width = this.options.width || 50;
 	this.height = this.options.height || 50;
@@ -78,7 +102,7 @@ Universe.prototype.seedUniverse = function() {
 		} else if (typeof this.options.seed === 'object') {
 			// Patterns
 			if (this.options.seed.type === 'pattern' && seedPatterns.hasOwnProperty(this.options.seed.pattern)) {
-				 return this.getStateFromPattern(this.options.seed.pattern, row, column);
+				return this.getStateFromPattern(this.options.seed.pattern, row, column);
 			}
 
 			// Random seed
@@ -90,9 +114,10 @@ Universe.prototype.seedUniverse = function() {
 };
 
 Universe.prototype.getStateFromPattern = function(pattern, row, column) {
-	var data = seedPatterns[pattern],
-		verticalAlignmentFix = parseInt((this.height - data.length) / 2, 10),
-		alignedRow = row - verticalAlignmentFix;
+	const data = seedPatterns[pattern];
+
+	const verticalAlignmentFix = parseInt((this.height - data.length) / 2, 10);
+	const alignedRow = row - verticalAlignmentFix;
 
 	if (data.length > alignedRow && row >= verticalAlignmentFix && data[alignedRow].length > column) {
 		return data[alignedRow][column].toUpperCase() === 'O';
@@ -103,9 +128,11 @@ Universe.prototype.getStateFromPattern = function(pattern, row, column) {
 
 Universe.prototype.evolve = function() {
 	evolveCells.call(this, function(row, column) {
-		var myState = this.cells[row][column],
-			state = myState,
-			liveNeighbours = countNeighbours.call(this, row, column);
+		const myState = this.cells[row][column];
+
+		let state = myState;
+
+		const liveNeighbours = countNeighbours.call(this, row, column);
 
 		/* Rules of Life */
 		// underpopulation
