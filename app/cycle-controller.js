@@ -1,36 +1,40 @@
-var $ = require('jquery'),
-	_ = require('lodash'),
-	seedPatterns = require('./seed-patterns'),
+const $ = require('jquery');
 
-bindManualControls = function(board) {
+const _ = require('lodash');
+const seedPatterns = require('./seed-patterns');
+
+const bindManualControls = function(board) {
 	board.$container.find('.control-button').on('click', this.nextCycle.bind(this));
 	board.$container.find('.control-seed')
 		.on('change', this.resetCycle.bind(this));
-},
+};
 
-bindAutomaticControls = function(board) {
+const bindAutomaticControls = function(board) {
 	board.$container.find('.control-button')
-		.on('click', function(ev) {
-			var paused = this.pauseCycle();
+		.on('click', (ev) => {
+			const paused = this.pauseCycle();
+
 			$(ev.target).text(paused ? 'Resume' : 'Pause');
-		}.bind(this))
+		})
 		.text(this.paused ? 'Resume' : 'Pause');
 	board.$container.find('.control-seed')
 		.on('change', this.resetCycle.bind(this));
-},
+};
 
-fillSelect = function(board) {
-	var $select = board.$container.find('.control-seed'),
-		$optgroup = $select.find('optgroup'),
-		$opt;
+const fillSelect = function(board) {
+	const $select = board.$container.find('.control-seed');
 
-	_.each(seedPatterns, function(value, key) {
+	const $optgroup = $select.find('optgroup');
+
+	let $opt;
+
+	_.each(seedPatterns, (value, key) => {
 		$opt = $('<option>').val(key).text(key.replace(/-/g, ' '));
 		$optgroup.append($opt);
 	});
-},
+};
 
-CycleController = function(options) {
+const CycleController = function(options) {
 	this.options = options;
 	this.paused = false;
 	this.board = this.options.board;
@@ -41,11 +45,11 @@ CycleController = function(options) {
 };
 
 CycleController.prototype.initialize = function() {
-	if (!this.options.cycle) {
-		bindManualControls.call(this, this.board);
-	} else {
+	if (this.options.cycle) {
 		this.pauseCycle();
 		bindAutomaticControls.call(this, this.board);
+	} else {
+		bindManualControls.call(this, this.board);
 	}
 
 	this.board.renderCells(this.options.universe);

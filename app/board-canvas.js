@@ -1,12 +1,13 @@
-var $ = require('jquery'),
-	_ = require('lodash'),
+const $ = require('jquery');
 
-defaultOptions = {
+const _ = require('lodash');
+
+const defaultOptions = {
 	container: 'body',
 	cellSize: 3
-},
+};
 
-Board = function(options) {
+const Board = function(options) {
 	this.options = _.extend({}, defaultOptions, options);
 	this.universe = this.options.universe;
 	this.$container = $(this.options.container);
@@ -21,8 +22,9 @@ Board.prototype.build = function() {
 };
 
 Board.prototype.setDimensions = function() {
-	var width = parseInt(this.$canvas.width() / this.options.cellSize, 10),
-		height = parseInt(this.$canvas.height() / this.options.cellSize, 10);
+	const width = parseInt(this.$canvas.width() / this.options.cellSize, 10);
+
+	const height = parseInt(this.$canvas.height() / this.options.cellSize, 10);
 
 	this.universe.setDimensions(width, height);
 	this.universe.seedUniverse();
@@ -39,10 +41,11 @@ Board.prototype.setUniverse = function(universe) {
 };
 
 Board.prototype.renderCells = function() {
-	var context = this.canvas.getContext('2d'),
-		universe = this.universe;
+	const context = this.canvas.getContext('2d');
 
-	this.$header.text('Generation: ' + (universe.generation || 0));
+	const universe = this.universe;
+
+	this.$header.text(`Generation: ${universe.generation || 0}`);
 
 	function drawDot(row, col, color) {
 		context.fillStyle = color || 'black';
@@ -56,14 +59,14 @@ Board.prototype.renderCells = function() {
 
 	if (universe.delta) {
 		// Draw live cells
-		universe.delta.live.forEach(function(pos) {
+		universe.delta.live.forEach((pos) => {
 			drawDot.call(this, pos.row, pos.col, 'black');
-		}.bind(this));
+		});
 
 		// Dead cells
-		universe.delta.dead.forEach(function(pos) {
+		universe.delta.dead.forEach((pos) => {
 			drawDot.call(this, pos.row, pos.col, 'white');
-		}.bind(this));
+		});
 	}
 };
 

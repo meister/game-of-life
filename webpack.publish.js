@@ -1,19 +1,14 @@
-var webpack = require('webpack');
+const path = require('path');
 
 module.exports = {
 	entry: {
 		app: ['./app/main.js']
 	},
 	output: {
-		path: './build',
+		path: path.join(__dirname, 'build'),
 		filename: 'bundle.min.js'
 	},
-	plugins: [
-		new webpack.optimize.UglifyJsPlugin({
-			compressor: {
-				warnings: false,
-				screw_ie8: true
-			}
-		})
-	]
+	optimization: {
+		minimize: true
+	}
 };
